@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DEBLENG REWARDS</title>
+
 <style>
 * {
   box-sizing: border-box;
@@ -20,20 +21,34 @@ body {
 }
 
 header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 20px 0;
-  margin-bottom: 20px;
 }
 
 .logo {
-  font-size: 27px;
+  font-size: 23px;
   font-weight: bold;
   color: #a78bfa;
 }
 
 .subtitle {
   color: #999;
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.logout {
+  background: #303346;
+  border: 1px solid #41445a;
+  color: white;
+  padding: 9px 12px;
+  border-radius: 8px;
 }
 
 .balance {
@@ -74,6 +89,13 @@ header {
   border-radius: 15px;
   text-align: center;
   border: 1px solid #303346;
+  color: white;
+  width: 100%;
+  min-height: 120px;
+}
+
+.item:active {
+  background: #303346;
 }
 
 .item .icon {
@@ -126,14 +148,31 @@ header {
   text-align: center;
   margin: 25px 0;
 }
+
+#loading {
+  text-align: center;
+  margin-top: 50px;
+  color: #aaa;
+}
+
 </style>
 </head>
 
 <body>
 
+<div id="loading">Memeriksa akun...</div>
+
+<main id="dashboard" hidden>
+
 <header>
-  <div class="logo">DEBLENG REWARDS</div>
-  <div class="subtitle">WATCH • EARN • REDEEM</div>
+  <div>
+    <div class="logo">DEBLENG REWARDS</div>
+    <div class="subtitle">WATCH • EARN • REDEEM</div>
+  </div>
+
+  <button class="logout" id="logoutButton">
+    Keluar
+  </button>
 </header>
 
 <div class="balance">
@@ -146,40 +185,40 @@ header {
 
 <div class="menu">
 
-  <div class="item">
+  <button class="item" data-page="ads">
     <div class="icon">▶️</div>
     <h3>Tonton Iklan</h3>
     <p>Aktivitas reward</p>
-  </div>
+  </button>
 
-  <div class="item">
+  <button class="item" data-page="referral">
     <div class="icon">👥</div>
     <h3>Undang Teman</h3>
-    <p>Rp1.000 / referral valid</p>
-  </div>
+    <p>Program referral</p>
+  </button>
 
-  <div class="item">
+  <button class="item" data-page="withdraw">
     <div class="icon">💰</div>
     <h3>Penarikan</h3>
-    <p>Minimal Rp10.000</p>
-  </div>
+    <p>Informasi penarikan</p>
+  </button>
 
-  <div class="item">
+  <button class="item" data-page="profile">
     <div class="icon">👤</div>
     <h3>Profil</h3>
     <p>Informasi akun</p>
-  </div>
+  </button>
 
 </div>
 
 <div class="referral">
   <h3>🎁 Undang Teman</h3>
   <p>
-    Ajak teman bergabung melalui kode referral kamu.
-    Dapatkan Rp1.000 untuk setiap referral
-    yang berhasil diverifikasi.
+    Program referral akan tersedia setelah
+    sistem verifikasi selesai dibuat.
   </p>
-  <button onclick="alert('Fitur referral akan diaktifkan setelah sistem akun selesai dibuat.')">
+
+  <button id="inviteButton">
     UNDANG TEMAN
   </button>
 </div>
@@ -188,7 +227,57 @@ header {
   DEBLENG REWARDS © 2026<br>
   Saldo dan reward mengikuti ketentuan program.
 </p>
-  
-<script src="script.js"></script>
+
+</main>
+
+<script type="module">
+import { auth } from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const loading = document.getElementById("loading");
+const dashboard = document.getElementById("dashboard");
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loading.hidden = true;
+    dashboard.hidden = false;
+  } else {
+    window.location.replace("login.html");
+  }
+});
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    window.location.replace("login.html");
+  } catch (error) {
+    alert("Gagal keluar. Silakan coba lagi.");
+  }
+});
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => {
+    const page = button.dataset.page;
+
+    const messages = {
+      ads: "Fitur iklan belum diaktifkan.",
+      referral: "Sistem referral masih dalam pengembangan.",
+      withdraw: "Fitur penarikan belum tersedia.",
+      profile: "Email akun: " + (auth.currentUser?.email || "-")
+    };
+
+    alert(messages[page]);
+  });
+});
+
+document.getElementById("inviteButton").addEventListener("click", () => {
+  alert("Fitur undang teman masih dalam pengembangan.");
+});
+</script>
+
 </body>
 </html>
