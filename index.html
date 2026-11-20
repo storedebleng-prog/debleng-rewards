@@ -197,6 +197,36 @@ button {
   border-radius: 8px;
   font-weight: bold;
 }
+
+.referral-code {
+  background: #10121b;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 15px;
+  border: 1px dashed #8055e8;
+  text-align: center;
+}
+
+.referral-code p {
+  color: #aaa;
+  font-size: 11px;
+}
+
+.referral-code h2 {
+  color: #a78bfa;
+  margin: 12px 0;
+  letter-spacing: 2px;
+}
+
+.referral-code button {
+  width: 100%;
+  padding: 11px;
+  background: #8055e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
   
 </style>
 </head>
@@ -261,6 +291,15 @@ button {
     sistem verifikasi selesai dibuat.
   </p>
 
+<div class="referral-code">
+  <p>KODE REFERRAL KAMU</p>
+  <h2 id="referralCode">Memuat...</h2>
+
+  <button id="copyReferralButton">
+    SALIN KODE
+  </button>
+</div>
+  
   <button id="inviteButton">
     UNDANG TEMAN
   </button>
@@ -323,6 +362,13 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("userUID").textContent =
       user.uid;
 
+const referralCode = "DB" + user.uid
+  .substring(0, 8)
+  .toUpperCase();
+
+document.getElementById("referralCode").textContent =
+  referralCode;
+    
 document.getElementById("userName").textContent =
   user.displayName || "Belum diatur";
     
@@ -385,6 +431,17 @@ document.getElementById("saveNameButton").addEventListener("click", async () => 
 
   } catch (error) {
     alert("Gagal menyimpan nama. Coba lagi.");
+  }
+});
+
+document.getElementById("copyReferralButton").addEventListener("click", async () => {
+  const code = document.getElementById("referralCode").textContent;
+
+  try {
+    await navigator.clipboard.writeText(code);
+    alert("Kode referral berhasil disalin: " + code);
+  } catch (error) {
+    alert("Gagal menyalin kode. Silakan salin secara manual.");
   }
 });
   
