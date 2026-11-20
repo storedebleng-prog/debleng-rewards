@@ -1,4 +1,4 @@
-
+  
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -175,6 +175,29 @@ button {
   margin-top: 50px;
   color: #aaa;
 }
+
+.profile input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #10121b;
+  border: 1px solid #41445a;
+  border-radius: 8px;
+  color: white;
+  outline: none;
+}
+
+.profile button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #8055e8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+  
 </style>
 </head>
 
@@ -245,8 +268,29 @@ button {
 
 <div class="profile">
   <h3>👤 Profil Akun</h3>
-  <p>Email: <span id="userEmail">Memuat...</span></p>
-  <p>UID: <span id="userUID">Memuat...</span></p>
+
+  <p>Nama:
+    <span id="userName">Belum diatur</span>
+  </p>
+
+  <p>Email:
+    <span id="userEmail">Memuat...</span>
+  </p>
+
+  <p>UID:
+    <span id="userUID">Memuat...</span>
+  </p>
+
+  <input
+    type="text"
+    id="nameInput"
+    placeholder="Masukkan nama tampilan"
+    maxlength="30"
+  >
+
+  <button id="saveNameButton">
+    SIMPAN NAMA
+  </button>
 </div>
 
 <p class="note">
@@ -261,7 +305,8 @@ import { auth } from "./firebase.js";
 
 import {
   onAuthStateChanged,
-  signOut
+  signOut,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 const loading = document.getElementById("loading");
@@ -278,6 +323,9 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("userUID").textContent =
       user.uid;
 
+document.getElementById("userName").textContent =
+  user.displayName || "Belum diatur";
+    
   } else {
     window.location.replace("login.html");
   }
@@ -310,6 +358,36 @@ document.querySelectorAll("[data-page]").forEach(button => {
 document.getElementById("inviteButton").addEventListener("click", () => {
   alert("Fitur undang teman masih dalam pengembangan.");
 });
+
+document.getElementById("saveNameButton").addEventListener("click", async () => {
+  const nameInput = document.getElementById("nameInput");
+  const newName = nameInput.value.trim();
+
+  if (!newName) {
+    alert("Nama tidak boleh kosong!");
+    return;
+  }
+
+  if (newName.length > 30) {
+    alert("Nama maksimal 30 karakter!");
+    return;
+  }
+
+  try {
+    await updateProfile(auth.currentUser, {
+      displayName: newName
+    });
+
+    document.getElementById("userName").textContent = newName;
+    nameInput.value = "";
+
+    alert("Nama berhasil disimpan!");
+
+  } catch (error) {
+    alert("Gagal menyimpan nama. Coba lagi.");
+  }
+});
+  
 </script>
 
 </body>
