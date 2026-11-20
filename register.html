@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar - DEBLENG REWARDS</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #10121b;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo h1 {
+  color: #a78bfa;
+  font-size: 30px;
+}
+
+.logo p {
+  color: #999;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.register-box {
+  background: #202331;
+  padding: 25px;
+  border-radius: 18px;
+  border: 1px solid #303346;
+}
+
+.register-box h2 {
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #999;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 17px;
+  background: #303346;
+  border: 1px solid #41445a;
+  border-radius: 10px;
+  color: white;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #8055e8;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+.login {
+  text-align: center;
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 13px;
+}
+
+a {
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.notice {
+  color: #888;
+  text-align: center;
+  font-size: 11px;
+  margin-top: 20px;
+}
+
+#message {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    <h1>DEBLENG</h1>
+    <h2>REWARDS</h2>
+    <p>WATCH • EARN • REDEEM</p>
+  </div>
+
+  <div class="register-box">
+
+    <h2>Buat Akun</h2>
+
+    <p class="description">
+      Bergabung dengan DEBLENG REWARDS.
+    </p>
+
+    <form id="registerForm">
+
+      <label>Nama pengguna</label>
+      <input
+        id="username"
+        type="text"
+        placeholder="Nama kamu"
+        maxlength="30"
+        required
+      >
+
+      <label>Email</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="Email aktif"
+        autocomplete="email"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Buat password (minimal 8 karakter)"
+        minlength="8"
+        autocomplete="new-password"
+        required
+      >
+
+      <label>Kode referral (opsional)</label>
+      <input
+        id="referral"
+        type="text"
+        placeholder="Kode undangan teman"
+        maxlength="30"
+      >
+
+      <button id="registerButton" type="submit">
+        DAFTAR SEKARANG
+      </button>
+
+      <p id="message" role="status"></p>
+
+    </form>
+
+    <div class="login">
+      Sudah punya akun?
+      <a href="login.html">Masuk</a>
+    </div>
+
+  </div>
+
+  <p class="notice">
+    DEBLENG REWARDS © 2026
+  </p>
+
+</div>
+
+<script type="module">
+import { auth } from "./firebase.js";
+
+import {
+  createUserWithEmailAndPassword,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const form = document.getElementById("registerForm");
+const message = document.getElementById("message");
+const button = document.getElementById("registerButton");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const referral = document.getElementById("referral").value.trim();
+
+  if (!username) {
+    message.textContent = "Nama pengguna wajib diisi.";
+    return;
+  }
+
+  if (password.length < 8) {
+    message.textContent = "Password minimal 8 karakter.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "MEMBUAT AKUN...";
+  message.textContent = "";
+
+  try {
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    await updateProfile(result.user, {
+      displayName: username
+    });
+
+    message.style.color = "#86efac";
+    message.textContent = "Akun berhasil dibuat!";
+
+    // Kode referral belum diproses atau diberi hadiah.
+    // Perlu validasi server sebelum sistem referral diaktifkan.
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1200);
+
+  } catch (error) {
+    message.style.color = "#fca5a5";
+
+    const errors = {
+      "auth/email-already-in-use": "Email sudah terdaftar.",
+      "auth/invalid-email": "Format email tidak valid.",
+      "auth/weak-password": "Password terlalu lemah.",
+      "auth/network-request-failed": "Periksa koneksi internet.",
+      "auth/operation-not-allowed": "Aktifkan Email/Password di Firebase."
+    };
+
+    message.textContent =
+      errors[error.code] || "Pendaftaran gagal. Coba lagi.";
+
+    button.disabled = false;
+    button.textContent = "DAFTAR SEKARANG";
+  }
+});
+</script>
+
+</body>
+</html>

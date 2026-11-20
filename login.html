@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - DEBLENG REWARDS</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #10121b;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo h1 {
+  color: #a78bfa;
+  font-size: 30px;
+}
+
+.logo p {
+  color: #999;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.login-box {
+  background: #202331;
+  padding: 25px;
+  border-radius: 18px;
+  border: 1px solid #303346;
+}
+
+.login-box h2 {
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #999;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  background: #303346;
+  border: 1px solid #41445a;
+  border-radius: 10px;
+  color: white;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #8055e8;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+.register {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.register a {
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.notice {
+  color: #888;
+  font-size: 11px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+#message {
+  font-size: 13px;
+  margin-top: 15px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    <h1>DEBLENG</h1>
+    <h2>REWARDS</h2>
+    <p>WATCH • EARN • REDEEM</p>
+  </div>
+
+  <div class="login-box">
+
+    <h2>Selamat Datang!</h2>
+
+    <p class="description">
+      Masuk untuk mengakses DEBLENG REWARDS.
+    </p>
+
+    <form id="loginForm">
+
+      <label>Email</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="Masukkan email"
+        autocomplete="email"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Masukkan password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button id="loginButton" type="submit">
+        MASUK
+      </button>
+
+      <p id="message" role="status"></p>
+
+    </form>
+
+    <div class="register">
+      Belum punya akun?
+      <a href="register.html">Daftar</a>
+    </div>
+
+  </div>
+
+  <p class="notice">
+    DEBLENG REWARDS © 2026
+  </p>
+
+</div>
+
+<script type="module">
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword }
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const form = document.getElementById("loginForm");
+const message = document.getElementById("message");
+const button = document.getElementById("loginButton");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  button.disabled = true;
+  button.textContent = "MEMPROSES...";
+  message.textContent = "";
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+
+    message.style.color = "#86efac";
+    message.textContent = "Login berhasil!";
+
+    window.location.href = "index.html";
+
+  } catch (error) {
+    message.style.color = "#fca5a5";
+
+    const errors = {
+      "auth/invalid-credential": "Email atau password salah.",
+      "auth/invalid-email": "Format email tidak valid.",
+      "auth/too-many-requests": "Terlalu banyak percobaan. Coba lagi nanti.",
+      "auth/network-request-failed": "Periksa koneksi internet."
+    };
+
+    message.textContent =
+      errors[error.code] || "Login gagal. Silakan coba lagi.";
+
+    button.disabled = false;
+    button.textContent = "MASUK";
+  }
+});
+</script>
+
+</body>
+</html>
