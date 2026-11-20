@@ -227,6 +227,53 @@ button {
   border-radius: 8px;
   font-weight: bold;
 }
+
+.referral-history {
+  background: #202331;
+  padding: 18px;
+  border-radius: 15px;
+  margin-top: 15px;
+  border: 1px solid #303346;
+}
+
+.referral-history h3 {
+  color: #a78bfa;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.referral-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.referral-stats div {
+  background: #10121b;
+  padding: 15px 8px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.referral-stats h2 {
+  color: #a78bfa;
+  margin-bottom: 7px;
+}
+
+.referral-stats p {
+  color: #aaa;
+  font-size: 11px;
+}
+
+.history-list {
+  margin-top: 15px;
+  padding: 12px;
+  background: #10121b;
+  border-radius: 10px;
+  color: #aaa;
+  font-size: 12px;
+  text-align: center;
+}
   
 </style>
 </head>
@@ -298,6 +345,26 @@ button {
   <button id="copyReferralButton">
     SALIN KODE
   </button>
+</div>
+
+<div class="referral-history">
+  <h3>📊 Riwayat Referral</h3>
+
+  <div class="referral-stats">
+    <div>
+      <h2 id="totalReferral">0</h2>
+      <p>Total Undangan</p>
+    </div>
+
+    <div>
+      <h2 id="validReferral">0</h2>
+      <p>Referral Valid</p>
+    </div>
+  </div>
+
+  <div class="history-list">
+    <p>Belum ada aktivitas referral.</p>
+  </div>
 </div>
   
   <button id="inviteButton">
